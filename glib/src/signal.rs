@@ -9,6 +9,7 @@ use crate::{ffi, gobject_ffi};
 use libc::{c_char, c_ulong, c_void};
 
 use crate::{prelude::*, translate::*};
+use std::marker::PhantomData;
 
 // rustdoc-stripper-ignore-next
 /// The id of a signal that is returned by `connect`.
@@ -72,6 +73,16 @@ pub unsafe fn connect_raw<F>(
     trampoline: gobject_ffi::GCallback,
     closure: *mut F,
 ) -> SignalHandlerId {
+    unsafe { connect_raw_with_after(receiver, signal_name, trampoline, closure, false) }
+}
+
+pub unsafe fn connect_raw_with_after<F>(
+    receiver: *mut gobject_ffi::GObject,
+    signal_name: *const c_char,
+    trampoline: gobject_ffi::GCallback,
+    closure: *mut F,
+    after: bool,
+) -> SignalHandlerId {
     unsafe {
         unsafe extern "C" fn destroy_closure<F>(ptr: *mut c_void, _: *mut gobject_ffi::GClosure) {
             unsafe {
@@ -81,13 +92,18 @@ pub unsafe fn connect_raw<F>(
         }
         debug_assert_eq!(mem::size_of::<*mut F>(), mem::size_of::<ffi::gpointer>());
         debug_assert!(trampoline.is_some());
+        let flags = if after {
+            gobject_ffi::G_CONNECT_AFTER
+        } else {
+            gobject_ffi::G_CONNECT_DEFAULT
+        };
         let handle = gobject_ffi::g_signal_connect_data(
             receiver,
             signal_name,
             trampoline,
             closure as *mut _,
             Some(destroy_closure::<F>),
-            0,
+            flags,
         );
         debug_assert!(handle > 0);
         from_glib(handle)
@@ -230,3 +246,98 @@ impl From<Propagation> for crate::Value {
         bool::from(v).into()
     }
 }
+
+// pub trait SignalProxy<T: IsA<crate::Object>> {
+//     const NAME: &'static str;
+//     #[doc(hidden)]
+//     fn object(&self) -> &T;
+
+//     fn stop_emission(&self) {
+//         self.object().stop_signal_emission_by_name(Self::NAME);
+//     }
+// }
+
+// pub struct SignalProxy<'a, T: 'a, S: StaticSignalDescriptor> {
+//     object: &'a T,
+//     marker: std::marker::PhantomData<S>,
+// }
+
+// impl<T, S: StaticSignalDescriptor> SignalProxy<'_, T, S>
+// where
+//     T: IsA<crate::Object>,
+// {
+//     pub fn connect(&self) {
+//         self.object.connect(S::NAME, false);
+//     }
+
+//     pub fn emit(&self, args: S::Args<'_>) {
+//         self.object.emit_by_name(S::NAME, args.as_array().as_ref())
+//     }
+// }
+
+pub struct SignalProxy<'a, T: 'a, S: SignalDescriptor<T>> {
+    object: &'a T,
+    marker: std::marker::PhantomData<S>,
+}
+
+impl<T, S: SignalDescriptor<T>> SignalProxy<'_, T, S> {
+    pub fn connect(&self, handler: impl Fn(&T, S::Args<'_>)) {
+        todo!()
+    }
+}
+
+pub trait SignalDescriptor<T> {
+    const NAME: &str;
+    type Args<'a>;
+    type HandlerArgs<'a>;
+    type Output;
+}
+
+pub trait DetailedSignalDescriptor<T: ObjectType>: SignalDescriptor<T> {
+    fn emit(target: &T, detail: Option<&str>, args: Self::Args<'_>) -> Self::Output;
+
+    fn connect<F: for<'a> Fn(&'a T, Self::Args<'a>) -> Self::Output + 'static>(
+        target: &T,
+        detail: Option<&str>,
+        handler: F,
+    ) -> SignalHandlerId;
+
+    // fn connect_to_signal_group<
+    //     P: IsA<T>,
+    //     F: for<'a> Fn(&'a P, Self::Args<'a>) -> Self::Output + 'static,
+    // >(
+    //     target: &P,
+    //     detail: Option<&str>,
+    //     handler: F,
+    // ) -> SignalHandlerId;
+}
+
+pub struct TypedSignalGroup<T> {
+    marker: std::marker::PhantomData<T>,
+}
+
+impl<T> Default for TypedSignalGroup<T> {
+    fn default() -> Self {
+        Self {
+            marker: PhantomData,
+        }
+    }
+}
+
+impl<T> TypedSignalGroup<T> {
+    pub fn connect<S: SignalDescriptor<T>>(
+        &self,
+        signal: S,
+        handler: impl Fn(&T, S::HandlerArgs<'_>),
+    ) {
+        todo!()
+    }
+}
+
+pub trait GugusExt: ObjectType {
+    fn connect<S: SignalDescriptor<Self>>(&self, _marker: S, handler: impl Fn(&Self, S::Args<'_>)) {
+        todo!()
+    }
+}
+
+impl<T: ObjectType> GugusExt for T {}
