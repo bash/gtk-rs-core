@@ -7,6 +7,7 @@
 #![allow(clippy::manual_c_str_literals)]
 #![doc = include_str!("../README.md")]
 
+pub use gio_macros::*;
 pub use gio_sys as ffi;
 pub use glib;
 
@@ -37,6 +38,8 @@ pub use self::dbus_connection::{
     WeakSignalSubscription,
 };
 mod dbus_interface_info;
+mod dbus_interface_vtable;
+pub use dbus_interface_vtable::{DBusInterfaceVTable, DBusInterfaceVTableBuilder};
 mod dbus_message;
 mod dbus_method_invocation;
 mod dbus_node_info;

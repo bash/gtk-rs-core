@@ -29,6 +29,10 @@ name = "gio_cancellable_future"
 path = "gio_cancellable_future/main.rs"
 
 [[bin]]
+name = "gio_dbus_interface_skeleton"
+path = "gio_dbus_interface_skeleton/main.rs"
+
+[[bin]]
 name = "gio_futures"
 path = "gio_futures/main.rs"
 

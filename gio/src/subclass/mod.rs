@@ -31,6 +31,7 @@ pub mod prelude {
         application::{ApplicationImpl, ApplicationImplExt},
         async_initable::{AsyncInitableImpl, AsyncInitableImplExt},
         dbus_interface::{DBusInterfaceImpl, DBusInterfaceImplExt},
+        dbus_interface_skeleton::{DBusInterfaceSkeletonImpl, DBusInterfaceSkeletonImplExt},
         dbus_proxy::{DBusProxyImpl, DBusProxyImplExt},
         file::{FileImpl, FileImplExt},
         file_enumerator::{FileEnumeratorImpl, FileEnumeratorImplExt},

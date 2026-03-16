@@ -40,6 +40,7 @@ futures-core = { version = "0.3", default-features = false }
 futures-channel = "0.3"
 futures-io = "0.3"
 futures-util = { version = "0.3", default-features = false }
+gio-macros = { workspace = true, default-features = false }
 gio-sys.workspace = true
 glib = { workspace = true, features = ["futures"] }
 pin-project-lite = "0.2"

@@ -514,6 +514,7 @@ dependencies = [
  "futures-core",
  "futures-io",
  "futures-util",
+ "gio-macros",
  "gio-sys",
  "gir-format-check",
  "glib",
@@ -521,6 +522,19 @@ dependencies = [
  "pin-project-lite",
  "serial_test",
  "smallvec",
+]
+
+[[package]]
+name = "gio-macros"
+version = "0.23.0-alpha"
+dependencies = [
+ "glib",
+ "heck",
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "syn",
+ "trybuild2",
 ]
 
 [[package]]
@@ -559,32 +573,6 @@ dependencies = [
  "shell-words",
  "system-deps",
  "tempfile",
-]
-
-[[package]]
-name = "gio-win32"
-version = "0.23.0-alpha"
-dependencies = [
- "gio",
- "gio-win32-sys",
- "gir-format-check",
- "glib",
- "libc",
- "tempfile",
-]
-
-[[package]]
-name = "gio-win32-sys"
-version = "0.23.0-alpha"
-dependencies = [
- "gio-sys",
- "glib-sys",
- "gobject-sys",
- "libc",
- "shell-words",
- "system-deps",
- "tempfile",
- "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -661,28 +649,6 @@ dependencies = [
 
 [[package]]
 name = "glib-unix-sys"
-version = "0.23.0-alpha"
-dependencies = [
- "glib-sys",
- "libc",
- "shell-words",
- "system-deps",
- "tempfile",
-]
-
-[[package]]
-name = "glib-win32"
-version = "0.23.0-alpha"
-dependencies = [
- "gir-format-check",
- "glib",
- "glib-win32-sys",
- "libc",
- "tempfile",
-]
-
-[[package]]
-name = "glib-win32-sys"
 version = "0.23.0-alpha"
 dependencies = [
  "glib-sys",
