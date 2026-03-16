@@ -5,6 +5,7 @@ mod action_map;
 mod application;
 mod async_initable;
 mod dbus_interface;
+mod dbus_interface_skeleton;
 mod dbus_proxy;
 mod file;
 mod file_enumerator;
