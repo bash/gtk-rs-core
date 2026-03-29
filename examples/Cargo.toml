@@ -47,6 +47,7 @@ path = "gio_dbus_receive_signals/main.rs"
 [[bin]]
 name = "gio_dbus_register_object"
 path = "gio_dbus_register_object/main.rs"
+required-features = ["gio/v2_88"]
 
 [[bin]]
 name = "gio_task"
